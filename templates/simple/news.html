@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}CoRST News{% endblock %}
+{% block meta_content %}News{% endblock %}
+
+{% block content_header %}News{% endblock content_header %}
+{% block top-name %}
+          CoRST News
+          {% endblock %}
+{% block content %}
+{% for article in articles %}
+     <strong>{{ article.date }}</strong>
+    <p>{{ article.text_eng }} </p>
+    {% endfor %}
+
+{% endblock content %}
