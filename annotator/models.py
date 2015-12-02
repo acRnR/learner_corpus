@@ -10,6 +10,7 @@ from utils import *
 bold_regex = re.compile('/b\\[(\\d+)\\]')
 span_regex = re.compile('span\\[(\\d+)\\]')
 
+
 class Document(models.Model):
     """A document being annotated"""
     owner = models.ForeignKey(User, blank=True, null=True)
@@ -116,6 +117,7 @@ class Document(models.Model):
     class Meta:
         verbose_name = _('document')
         verbose_name_plural = _('documents')
+
 
 class Sentence(models.Model):
     text = models.CharField(max_length=1000000)

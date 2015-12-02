@@ -3,6 +3,7 @@ __author__ = 'elmira'
 
 import re
 import codecs
+from collections import defaultdict
 from annotator.models import Document, Sentence, Annotation, Token, Morphology
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -11,6 +12,29 @@ from db_utils import Database
 # todo make this into a neat one-line js-function
 jquery = """jQuery(function ($) {$('#***').annotator().annotator('addPlugin', 'Tags').annotator('addPlugin', 'Corr').annotator('addPlugin', 'Correction', 'Enter correct variant...').annotator('addPlugin', 'ReadOnlyAnnotations').annotator('addPlugin', 'Store', {prefix: '/learner_corpus/document-annotations',annotationData: {'document': ***},loadFromSearch: {'document': ***}});});"""
 reg = re.compile(',| ')
+regToken= re.compile('">(.*?)</span>', flags=re.U | re.DOTALL)
+regSpans = re.compile('<span .*?</span>', flags=re.U | re.DOTALL)
+
+
+class ShowSentence:
+    def __init__(self, sent_id, num):
+        k = Sentence.objects.get(pk=sent_id)
+        self.tagged = self.bold(k.tagged, num)
+        self.id = sent_id
+        self.doc_id = k.doc_id
+
+    def bold(self, tagged, num):
+        s = regSpans.findall(tagged)
+        for i in num:
+            try:
+                s[i-1] = regToken.sub('"><b>\\1</b></span>', s[i-1])
+            except:
+                pass  #todo find the bug here
+                # with codecs.open('s.txt', 'w', encoding='utf-8') as f:
+                #     f.write(' '.join(str(ciph) for ciph in num))
+                #     f.write('\r\n')
+                #     f.write(tagged)
+        return ' '.join(s)
 
 def get_subcorpus(query):
     req = 'SELECT id FROM `annotator_document` WHERE 1 '
@@ -85,23 +109,22 @@ def exact_search(word, docs, flag):
     if flag:
         req1 += 'AND doc_id IN ('+','.join(docs) + ');'
     docs_len = int(db.execute(req1)[0][0])
-    req2 = 'SELECT DISTINCT sent_id FROM `annotator_token` WHERE token="'+ word +'" '
+    req2 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ word +'" '
     if flag:
         req2 += 'AND doc_id IN ('+','.join(docs) + ');'
     tokens = db.execute(req2)
     # tokens = Token.objects.filter(token__exact=word)
+    e = defaultdict(list)
+    for i, j in tokens:
+        e[i].append(j)
     jq = []
-    sent_list = []
-    for row in tokens:
-        try:
-            sent_list.append(Sentence.objects.get(pk=row[0]))
-        except:
-            pass
+    sent_list = [ShowSentence(i, e[i]) for i in e]
     for sent in tokens:
         # sent.temp = bold(word, sent.tagged)
         # sent.save()
         jq.append(jquery.replace('***', str(sent[0])))
     return jq, sent_list, word, docs_len
+
 
 def lex_search(query, docs, flag):
     # print query
@@ -122,7 +145,15 @@ def lex_search(query, docs, flag):
     gram = grams[wn].encode('utf-8')
     err = errs[wn].encode('utf-8')
     rows = collect_data([word, lex, gram, err, docs, flag])
-    sent_list = [Sentence.objects.get(pk=row[0]) for row in rows]
+    e = defaultdict(list)
+    if len(rows[0]) == 2:
+        for i, j in rows:
+            e[i].append(j)
+    else:
+        for i, j, k in rows:
+            for n in range(j, k+1):
+                e[i].append(n)
+    sent_list = [ShowSentence(i, e[i]) for i in e]
     for sent in rows:
         jq.append(jquery.replace('***', str(sent[0])))
     word=' '.join(query.getlist(u'wordform[]'))
@@ -132,13 +163,13 @@ def lex_search(query, docs, flag):
 def collect_data(arr):
     word, lex, gram, err, docs, flag = arr
     if [word, lex, gram] == ["", "", ""] and err != '':
-        req = 'SELECT document_id FROM annotator_annotation WHERE 1 '
+        req = 'SELECT DISTINCT document_id, start, end FROM annotator_annotation WHERE 1 '
         errs = [i for i in reg.split(err.lower()) if i != '']
         for er in errs:
-            req += 'AND tag LIKE "%' + er + '%" '
+            req += 'AND tag REGEXP "[[:<:]]' + er + '[[:>:]]" '
     else:
         if err != '':
-            req = '''SELECT DISTINCT sent_id FROM  annotator_token
+            req = '''SELECT DISTINCT sent_id, num FROM  annotator_token
         LEFT JOIN annotator_morphology
         ON annotator_token.id = annotator_morphology.token_id
         LEFT JOIN annotator_annotation
@@ -149,7 +180,7 @@ def collect_data(arr):
                 req += 'AND tag LIKE "%' + er + '%" '
             req += 'AND num>= annotator_annotation.start AND num <= annotator_annotation.end '
         else:
-            req = '''SELECT DISTINCT sent_id FROM  annotator_token
+            req = '''SELECT DISTINCT sent_id, num FROM  annotator_token
         LEFT JOIN annotator_morphology
         ON annotator_token.id = annotator_morphology.token_id
         WHERE 1 '''

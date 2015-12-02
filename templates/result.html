@@ -35,7 +35,7 @@ $(document).ready(function(){
     <h4><span  class="label label-default">{% trans 'Corpus total' %}: {{ numbers.total_docs }} documents, {{ numbers.total_sents }} sentences, {{ numbers.total_tokens }} words.</span></h4>
     <h4><span  class="label label-default">{% trans 'Search executed in a user-defined subcorpus of' %} {{ numbers.subcorpus_docs }} documents, {{ numbers.subcorpus_sents }} sentences, {{ numbers.subcorpus_words }} words.</span></h4>
     <h4><span  class="label label-default">{% trans 'Found' %}: {{ total_docs }} documents, {{ total }} contexts.</span></h4>
-    <ol start="{{ result.number|multiply:10 }}">
+    <ol start="{{start_ol}}">
 
     {% for sent in result %}
         <li><div class="doctitle">{{ sent.doc_id }}</div>
@@ -56,7 +56,7 @@ $(document).ready(function(){
       </a>
     </li>
             {% endif %}
-{% for i in result.paginator.page_range %}
+{% for i in result.paginator.page_range2 %}
     <li
     {% if result.number == i %}
             class="active"
