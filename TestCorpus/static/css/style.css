@@ -42,3 +42,8 @@ form .form-group {
 #search {
     margin-top: 0.8%;
 }
+
+span.doctitle {
+    color: #777;
+    border-bottom: 1px dotted;
+}

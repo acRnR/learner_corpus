@@ -120,10 +120,10 @@ class Document(models.Model):
 
 
 class Sentence(models.Model):
-    text = models.CharField(max_length=1000000)
+    text = models.TextField()
     doc_id = models.ForeignKey(Document)
     num = models.IntegerField()
-    tagged = models.CharField(max_length=1000000)  # stores the html-piece
+    tagged = models.TextField()  # stores the html-piece
     temp = models.CharField(max_length=1000000, null=True, blank=True)  # stores the html-piece
 
     def __unicode__(self):
@@ -183,7 +183,7 @@ class Annotation(models.Model):
             self.start = int(span_regex.search(start).group(1))
             if end == "":  # /span[], ''
                 end = '/span['+str(self.start+q_len-1)+']'
-                endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' ,:;!?.'))
+                endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' !$%()*+,-./:;<>?[\\]^{|}«·»;·‒–—―‰‱'))
                 print (q_enc.split(' ')[-1]), endOffset
             else:  # /span[], /span[]
                 end = bold_regex.sub('', end)
