@@ -88,11 +88,21 @@ class Root(BaseStorageView):
     def get(self, request):
         if len(request.GET) < 1:
             doc_list = Document.objects.all()
-            return render_to_response('annotate_list.html', {'docs': doc_list, 'users': User.objects.exclude(username='admin')}, context_instance=RequestContext(request))
+            majors = sorted(set([i.major for i in Document.objects.all()]))
+            return render_to_response('annotate_list.html', {'docs': doc_list, 'users': User.objects.exclude(username='admin').exclude(first_name=''), 'majors': majors}, context_instance=RequestContext(request))
         else:
-            user = User.objects.get(username=request.GET.keys()[0])
-            doc_list = list(set([ann.document.doc_id for ann in user.annotation_set.all()]))
-            return render_to_response('annotate_list.html', {'docs': doc_list, 'users': User.objects.exclude(username='admin')}, context_instance=RequestContext(request))
+            majors = sorted(set([i.major for i in Document.objects.all()]))
+            if 'user' in request.GET.keys():
+
+                user = User.objects.get(username=request.GET.keys()[0])
+                doc_list = list(set([ann.document.doc_id for ann in user.annotation_set.all()]))
+                return render_to_response('annotate_list.html', {'docs': doc_list, 'users': User.objects.exclude(username='admin').exclude(first_name=''), 'majors': majors}, context_instance=RequestContext(request))
+            else:
+                majs = request.GET.keys()[0]
+                doc_list = [doc for doc in Document.objects.all() if doc.major==majs]
+                return render_to_response('annotate_list.html', {'docs': doc_list, 'users': User.objects.exclude(username='admin').exclude(first_name=''), 'majors': majors}, context_instance=RequestContext(request))
+
+
 
 
 class Index(BaseStorageView):

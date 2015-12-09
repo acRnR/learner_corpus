@@ -27,6 +27,19 @@
     </form>
 
     </div>
+    <div class="row">
+    <form method="get">
+    <p>Выбрать направление:
+        {% for m in majors %}
+        <label class="radio-inline">
+          <input type="radio" name="{{ m }}" value=""> {{ m }}
+        </label>
+        {% endfor %}
+        <input type="submit" class="btn btn-xs btn-primary" value="Filter"></p>
+
+    </form>
+
+    </div>
 
 <div class="row">
 <div class="col-md-4">
