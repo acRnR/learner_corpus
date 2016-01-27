@@ -48,6 +48,7 @@ class PopUp(View):
         page = 'search/' + page + '.html'
         return render_to_response(page, context_instance=RequestContext(request))
 
+
 class Search(Index):
     # тут все для поиска
 
@@ -64,6 +65,7 @@ class Search(Index):
                                       {'form': QueryFormset, 'd': d},
                                       context_instance=RequestContext(request))
         else:
+            # print request.GET
             query = request.GET
             subcorpus, subcorpus_sents, subcorpus_words, flag = get_subcorpus(query)
             # print subcorpus.count()
@@ -75,50 +77,39 @@ class Search(Index):
                           'subcorpus_sents': subcorpus_sents,
                           'subcorpus_words': subcorpus_words}
             per_page = int(query.get(u'per_page'))
+            page = request.GET.get('page')
+            page = int(page) if page else 1
             expand = int(query.get(u'expand')[-1])
             if query["exact_word"] != '':
-                jq, sent_list, word, res_docs = exact_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag, expand)
+                jq, sent_list, word, res_docs, res_num = exact_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag, expand, page, per_page)
 
             else:
                 # QueryFormset = formset_factory(QueryForm)
                 # formset = QueryFormset(request.GET, request.FILES)
                 # if formset.is_valid():
                 # todo rewrite this part of search
-                jq, sent_list, word, res_docs = lex_search(query, subcorpus, flag, expand)
+                jq, sent_list, word, res_docs, res_num = lex_search(query, subcorpus, flag, expand, page, per_page)
 
-            page = request.GET.get('page')
 
-            paginator = Paginator(sent_list, per_page)
-            jq_paginator = Paginator(jq, per_page)
-            if page:
-                page = int(page)
-                start = page - 10 if page > 10 else 1
-                end = page + 10 if page + 10 <= paginator.num_pages else paginator.num_pages
-            else:
-                start = 1
-                end = 11 if paginator.num_pages > 10 else paginator.num_pages + 1
-            paginator.page_range2 = range(start, end)
+            paginator = Paginator(['']*res_num, per_page)
+            start = page - 10 if page > 10 else 1
+            end = page + 10 if page + 10 <= paginator.num_pages else paginator.num_pages
+            paginator.page_range2 = range(start, end+1)
             try:
                 sents = paginator.page(page)
-                jq = jq_paginator.page(page)
             except PageNotAnInteger:
                 # If page is not an integer, deliver first page.
-                page = 1
                 sents = paginator.page(1)
-                jq = jq_paginator.page(1)
             except EmptyPage:
-                page = paginator.num_pages
                 # If page is out of range (e.g. 9999), deliver last page of results.
                 sents = paginator.page(paginator.num_pages)
-                jq = jq_paginator.page(jq_paginator.num_pages)
             full_path = rePage.sub('', request.get_full_path())
             return render_to_response('result.html',
-                                      {'query': word, 'result': sents,
+                                      {'query': word, 'result': sent_list, 'pages': sents,
                                        'numbers': count_data,
-                                       'total': len(sent_list), 'total_docs': res_docs,
-                                       'path':full_path, 'j':jq, 'start_ol': page*per_page + 1 - per_page},
+                                       'total': res_num, 'total_docs': res_docs,
+                                       'path':full_path, 'j':jq, 'olstart': (page-1)*per_page + 1},
                                       context_instance=RequestContext(request))
-
 
 class Statistics(Index):
 

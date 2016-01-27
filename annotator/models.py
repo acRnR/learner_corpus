@@ -174,17 +174,21 @@ class Annotation(models.Model):
         return d
 
     def check_fields(self, start, end, startOffset, endOffset, quote, sent):
-        print start, end, sent
+        # print start, end, sent
         q_enc = quote.encode('utf-8')
         q_len = len(q_enc.split(' '))
-        print (q_enc.split(' ')[-1])
+        # print (q_enc.split(' ')[-1])
+        f = codecs.open('s.txt', 'w', 'utf-8')
+        f.write(' '.join([str(i) for i in [start, end, sent]]))
+        f.close()
         if start != '':
             start = bold_regex.sub('', start)
             self.start = int(span_regex.search(start).group(1))
             if end == "":  # /span[], ''
                 end = '/span['+str(self.start+q_len-1)+']'
-                endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' !$%()*+,-./:;<>?[\\]^{|}«·»;·‒–—―‰‱'))
-                print (q_enc.split(' ')[-1]), endOffset
+                # endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' !$%()*+,-./:;<>?[\\]^{|}«·»;·‒–—―‰‱'))
+                endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' ,:;!?.'))
+                # print (q_enc.split(' ')[-1]), endOffset
             else:  # /span[], /span[]
                 end = bold_regex.sub('', end)
             self.end = int(span_regex.search(end).group(1))
@@ -197,9 +201,9 @@ class Annotation(models.Model):
                 self.start = int(span_regex.search(start).group(1))
             else:
                 sent = Sentence.objects.get(id=sent).text.encode('utf-8')
-                print sent
+                # print sent
                 s = re.split(q_enc, sent)
-                for i in s: print i
+                # for i in s: print i
                 part = len(re.split(q_enc, sent)[0].strip().split(' '))
                 self.start = part + 1
                 self.end = part + q_len
@@ -207,9 +211,8 @@ class Annotation(models.Model):
                 startOffset = 0
                 end = '/span['+str(self.end)+']'
                 endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' ,:;!?.'))
-                print (q_enc.split(' ')[-1]), endOffset
+                # print (q_enc.split(' ')[-1]), endOffset
         return start, end, startOffset, endOffset
-
 
     def update_from_json(self, new_data):
         d = json.loads(self.data)
@@ -230,9 +233,9 @@ class Annotation(models.Model):
         d["ranges"][0]["startOffset"] = startOffset
         d["ranges"][0]["endOffset"] = endOffset
         self.data = json.dumps(d)
-        print self.data
+        # print self.data
         self.tag = ', '.join(d["tags"])
-        print self.start, self.end
+        # print self.start, self.end
     @staticmethod
     def as_list(qs=None, user=None):
         if qs is None:

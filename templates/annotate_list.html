@@ -19,7 +19,7 @@
     <p>Выбрать разметчика:
         {% for u in users %}
         <label class="radio-inline">
-          <input type="radio" name="{{ u.username }}" value=""> {{ u.first_name }} {{ u.last_name }}
+          <input type="radio" name="user" value="{{ u.username }}"> {{ u.first_name }} {{ u.last_name }}
         </label>
         {% endfor %}
         <input type="submit" class="btn btn-xs btn-primary" value="Filter"></p>

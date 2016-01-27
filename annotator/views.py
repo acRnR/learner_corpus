@@ -94,7 +94,7 @@ class Root(BaseStorageView):
             majors = sorted(set([i.major for i in Document.objects.all()]))
             if 'user' in request.GET.keys():
 
-                user = User.objects.get(username=request.GET.keys()[0])
+                user = User.objects.get(username=request.GET['user'])
                 doc_list = list(set([ann.document.doc_id for ann in user.annotation_set.all()]))
                 return render_to_response('annotate_list.html', {'docs': doc_list, 'users': User.objects.exclude(username='admin').exclude(first_name=''), 'majors': majors}, context_instance=RequestContext(request))
             else:

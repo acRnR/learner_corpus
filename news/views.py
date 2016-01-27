@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import permission_required
 from django.conf import settings
 from django.template import *
 from collections import Counter
-from news.models import Article
+from news.models import Article, Section
 
 
 import re
@@ -35,4 +35,11 @@ class PopUp(View):
     def get(self, request, page):
         page = 'search/' + page + '.html'
         return render_to_response(page, context_instance=RequestContext(request))
+
+
+class SectionView(View):
+    def get(self, request):
+        section_list = Section.objects.order_by('number')
+        page = 'start.html'
+        return render_to_response(page, {'sections': section_list}, context_instance=RequestContext(request))
 
