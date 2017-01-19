@@ -1391,6 +1391,16 @@
       return this.hide();
     };
 
+  var items = [ "lex", "word", "phrase", "meton", "intens", "deriv", "paron", "asp", "nmz", "aux", "agr", "gov", "infl", "compar", "complex", "rel_clause", "sent_arg", "conn", "coord", "discoord", "ref", "converb", "pron", "voice", "lack", "constr", "discourse", "parc", "logic", "link", "WO", "tauto", "top", "styl", "official", "colloq", "cause", "typo", "contam"];
+
+    function split( val ) {
+      return val.split( /\s+/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+
+
     Editor.prototype.addField = function(options) {
       var element, field, input;
       field = $.extend({
@@ -1419,6 +1429,31 @@
         id: field.id,
         placeholder: field.label
       });
+        if(field.label == 'Add some tags here…')
+        {$(document).on('focus', '#'+field.id, function() {
+    $( "#" + field.id )
+      .autocomplete({
+        minLength: 1,
+        source: function( request, response ) {
+          response( $.ui.autocomplete.filter(
+            items, extractLast( request.term ) ) );
+        },
+        focus: function() {
+          return false;
+        },
+        select: function( event, ui ) {
+          var terms = split( this.value );
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push( ui.item.value );
+          // add placeholder to get the comma-and-space at the end
+          terms.push( "" );
+          this.value = terms.join( " " );
+          return false;
+        }
+      });
+        })}
       if (field.type === 'checkbox') {
         input[0].type = 'checkbox';
         element.addClass('annotator-checkbox');

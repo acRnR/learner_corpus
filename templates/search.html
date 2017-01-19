@@ -132,11 +132,11 @@ $( document ).ready(function() {
                             <a onclick="getErr(1)"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
                             Errors<input class="form-control input-sm" type="text" id='err1' name="errors[]" placeholder="Тэги ошибок" size="100%"></label>
                     </div>
-                    <div class="col-sm-2">
-                        <label>
-                            <a onclick=""><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
-                            Additional<input class="form-control input-sm" type="text" name="additional[]" placeholder="Дополнительно" size="100%"></label>
-                    </div>
+{#                    <div class="col-sm-2">#}
+{#                        <label>#}
+{#                            <a onclick=""><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>#}
+{#                            Additional<input class="form-control input-sm" type="text" name="additional[]" placeholder="Дополнительно" size="100%"></label>#}
+{#                    </div>#}
                 </div>
             </div>
         <div class="entry">
@@ -174,11 +174,11 @@ $( document ).ready(function() {
                             <a id="geterr" onclick="getErr(2)"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
                             Errors<input class="form-control input-sm" type="text" id="err2" name="errors[]" placeholder="Тэги ошибок" size="100%"></label>
                     </div>
-                    <div class="col-sm-2">
-                        <label>
-                            <a id="getadd" onclick=""><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
-                            Additional<input class="form-control input-sm" type="text" name="additional[]" placeholder="Дополнительно" size="100%"></label>
-                    </div>
+{#                    <div class="col-sm-2">#}
+{#                        <label>#}
+{#                            <a id="getadd" onclick=""><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>#}
+{#                            Additional<input class="form-control input-sm" type="text" name="additional[]" placeholder="Дополнительно" size="100%"></label>#}
+{#                    </div>#}
                     <div class="col-sm-1">
                         <br><button id="b1" class="btn btn-success btn-add btn-sm" type="button"><span class="glyphicon glyphicon-plus"></span></button>
                     </div>
@@ -379,6 +379,13 @@ $( document ).ready(function() {
                 </select>
             </div>
           </div>
+          {% if user.is_active and user.is_staff %}
+          <div class="row">
+            <div class="col-sm-12">
+                <div class="checkbox"><label><input type="checkbox" name="download"> Download result</label></div>
+            </div>
+          </div>
+          {% endif %}
 
       </div>
       <div class="modal-footer">

@@ -16,6 +16,14 @@
             {% endblock %}
 
     {% block other %}
+
+     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <style>
+        .ui-autocomplete { position: absolute; cursor: default;z-index:30000 !important;}
+        </style>
+
 <script type="text/javascript">
 $(document).ready(function(){
   $('.token').tooltip({

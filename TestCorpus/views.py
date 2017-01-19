@@ -84,9 +84,6 @@ class Search(Index):
                 jq, sent_list, word, res_docs, res_num = exact_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag, expand, page, per_page)
 
             else:
-                # QueryFormset = formset_factory(QueryForm)
-                # formset = QueryFormset(request.GET, request.FILES)
-                # if formset.is_valid():
                 # todo rewrite this part of search
                 jq, sent_list, word, res_docs, res_num = lex_search(query, subcorpus, flag, expand, page, per_page)
 
