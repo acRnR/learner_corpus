@@ -3,7 +3,6 @@
 __author__ = 'elmira'
 import uuid
 import re
-import HTMLParser
 import subprocess
 import codecs
 import os
@@ -50,7 +49,7 @@ def get_sentences(xml):
             if search is None:
                 continue
             words += 1
-            if search is None: print word
+            if search is None: print (word)
             punctl, wordform, anas, punctr = search.group(1), search.group(2), search.group(3), search.group(4).replace('\r', ' ')
             if anas:
                 anas = regAna.findall(anas)  # массив пар, в каждой паре - лемма + разбор
@@ -66,7 +65,7 @@ def get_sentences(xml):
 
 
 def tooltip_generator(anas):
-    print anas
+    print (anas)
     d = {}
     for ana in anas:
         lem = ana[0]

@@ -5,7 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 
 import uuid
 import json
-from utils import *
+from annotator.utils import *
+import re
 
 bold_regex = re.compile('/b\\[(\\d+)\\]')
 span_regex = re.compile('span\\[(\\d+)\\]')
