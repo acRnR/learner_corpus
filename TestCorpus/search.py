@@ -7,7 +7,7 @@ from collections import defaultdict
 from annotator.models import Document, Sentence, Annotation, Token, Morphology
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from db_utils import Database
+from TestCorpus.db_utils import Database
 from django.http import HttpResponse
 
 # todo make this into a neat one-line js-function

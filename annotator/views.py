@@ -222,7 +222,7 @@ class EditorView2(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(EditorView2, self).get_context_data(**kwargs)
-        print context
+        print (context)
         context['storage_api_base_url'] = reverse('annotator.root')[0:-1]  # chop off trailing slash
         # print context['storage_api_base_url']
         d1 = get_object_or_404(Document, id=kwargs['doc_id'])

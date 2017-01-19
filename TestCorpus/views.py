@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, redirect, render
 from annotator.models import Document, Sentence, Annotation, Token, Morphology
 from django.views.generic.base import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from forms import QueryForm
+from TestCorpus.forms import QueryForm
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseForbidden
 from django.views.generic import View
@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.conf import settings
 from django.template import *
-from search import *
+from TestCorpus.search import *
 from collections import Counter
 from django.utils.translation import ugettext_lazy as _
 
